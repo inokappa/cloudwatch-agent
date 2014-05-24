@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-. ./plugins/plugin.sh
-. ./plugins/alarm.sh
+for file in ./plugin/*.sh
+do
+  source ${file}
+done
 
 export AWS_CREDENTIAL_FILE="Please set Your AWS API KEY Path"
 
@@ -20,10 +22,10 @@ THRESHHOLD="Please set Threshhold"
 
 function metrics_param() {
   case "${1}" in
-    "load_average" ) Unit="Count";Threshold=`cat /proc/cpuinfo | grep processor | wc -l` ;;
-    "cpu_usage" ) Unit="Percent";Threshold="${THRESHHOLD}" ;;
-    "mem_used" ) Unit="Percent";Threshold="${THRESHHOLD}" ;;
-    "disk_used" ) Unit="Percent";Threshold="${THRESHHOLD}" ;;
+    "load_average" ) Unit="${u}";Threshold="${t}" ;;
+    "cpu_usage" ) Unit="${u}";Threshold="${t}" ;;
+    "mem_used" ) Unit="${u}";Threshold="${t}" ;;
+    "disk_used" ) Unit="${u}";Threshold="${t}" ;;
   esac
 }
 

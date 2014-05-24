@@ -8,21 +8,29 @@ function get_hostname() {
 
 function get_load_average() {
   v=`uptime |awk '{print $10}' | cut -d ',' -f 1`
+  t=`cat /proc/cpuinfo | grep processor | wc -l`
+  u="Count"
 }
 
 function get_cpu_usage() {
   v=`top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}'`
+  t=90
+  u="Percent"
 }
 
 function get_memory_used() {
-  t=`free -m | grep 'Mem' | tr -s ' ' | cut -d ' ' -f 2`
-  f=`free -m | grep 'buffers/cache' | tr -s ' ' | cut -d ' ' -f 4`
-  let "v=100-f*100/t"
+  total=`free -m | grep 'Mem' | tr -s ' ' | cut -d ' ' -f 2`
+  free=`free -m | grep 'buffers/cache' | tr -s ' ' | cut -d ' ' -f 4`
+  let "v=100-free*100/total"
+  t=90
+  u="Percent"
 }
 
 function get_disk_used() {
   # Root Partition only...orz
   v=`df -m / | tail -n+2 | while read fs size used rest ; do if [[ $rest ]] ; then echo $rest; fi; done | awk '{print $2}' | sed s/\%//g`
+  t=90
+  u="Percent"
 }
 
 function generate_json() {
