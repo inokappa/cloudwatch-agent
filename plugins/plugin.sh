@@ -6,41 +6,13 @@ function get_hostname() {
   hostname=`curl -s http://169.254.169.254/latest/meta-data/hostname`
 }
 
-function get_load_average() {
-  v=`uptime |awk '{print $10}' | cut -d ',' -f 1`
-  t=`cat /proc/cpuinfo | grep processor | wc -l`
-  u="Count"
-}
-
-function get_cpu_usage() {
-  v=`top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}'`
-  t=90
-  u="Percent"
-}
-
-function get_memory_used() {
-  total=`free -m | grep 'Mem' | tr -s ' ' | cut -d ' ' -f 2`
-  free=`free -m | grep 'buffers/cache' | tr -s ' ' | cut -d ' ' -f 4`
-  let "v=100-free*100/total"
-  t=90
-  u="Percent"
-}
-
-function get_disk_used() {
-  # Root Partition only...orz
-  v=`df -m / | tail -n+2 | while read fs size used rest ; do if [[ $rest ]] ; then echo $rest; fi; done | awk '{print $2}' | sed s/\%//g`
-  t=90
-  u="Percent"
-}
-
 function generate_json() {
-  metrics_param ${1}
-  cat << EOT > /tmp/${1}.json
+  cat << EOT > /${TMPDIR}/${1}.json
 [
   {
     "MetricName": "${1}",
-    "Value": ${2},
-    "Unit": "${Unit}",
+    "Value": ${v},
+    "Unit": "${u}",
     "Dimensions": [
       {
         "Name": "Instanceid",
@@ -54,10 +26,4 @@ function generate_json() {
   }
 ]
 EOT
-}
-
-function put_metrics_data() {
-  aws --region ${REGION} cloudwatch put-metric-data \
-    --namespace "${NAMESPACE}" \
-    --metric-data file:///tmp/${1}.json
 }
