@@ -114,4 +114,4 @@ function create_alarm() {
 
 ## Chef
 
- * [cloudwatch-agent-chef]()
+ * [cloudwatch-agent-chef](https://github.com/inokappa/cloudwatch-agent-chef)
